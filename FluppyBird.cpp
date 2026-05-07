@@ -9,8 +9,9 @@
 enum class GameState { MENU, PLAYING, GAME_OVER };
 
 static void drawScore(sf::RenderWindow& window, sf::Texture digitTextures[10], int scoreVal, float yPos) {
-    std::string s = std::to_string(scoreVal);
+    std::string s = std::to_string(scoreVal); // преобразование числа в строку
 
+    // общая ширина счёта
     float totalW = 0;
     for (size_t i = 0; i < s.size(); i++) {
         char c = s[i];
@@ -25,7 +26,7 @@ static void drawScore(sf::RenderWindow& window, sf::Texture digitTextures[10], i
         sp.setScale(2.0f, 2.0f);
         sp.setPosition(x, yPos);
         window.draw(sp);
-        x += digitTextures[d].getSize().x * 2.0f;
+        x += digitTextures[d].getSize().x * 2.0f; // сдвигаем x вправо на ширину цифры
     }
 }
 
@@ -56,10 +57,8 @@ int main() {
         digitTextures[i].loadFromFile(std::to_string(i) + ".png");
 
     // ===== НАСТРОЙКА СПРАЙТОВ =====
-
     sf::Sprite bgSprite(bgTexture);
-    bgSprite.setScale(400.0f / bgTexture.getSize().x,
-        600.0f / bgTexture.getSize().y);
+    bgSprite.setScale(400.0f / bgTexture.getSize().x, 600.0f / bgTexture.getSize().y); // фон на всё окно
 
     float baseScale = 400.0f / (float)baseTexture.getSize().x;
     float baseHeight = baseTexture.getSize().y * baseScale;
@@ -101,7 +100,7 @@ int main() {
         x += PIPE_DISTANCE;
     }
 
-    sf::Clock clock;
+    sf::Clock clock; // часы для измерения времени между кадрами
 
     // ===== ИГРОВОЙ ЦИКЛ =====
     while (window.isOpen()) {
@@ -118,11 +117,9 @@ int main() {
                 if (state == GameState::MENU) {
                     state = GameState::PLAYING;
                     bird.jump();
-                }
-                else if (state == GameState::PLAYING) {
+                } else if (state == GameState::PLAYING) {
                     bird.jump();
-                }
-                else if (state == GameState::GAME_OVER) {
+                } else if (state == GameState::GAME_OVER) {
                     resetGame(bird, pipes, PIPE_DISTANCE, groundY);
                     score = 0;
                     state = GameState::MENU;
