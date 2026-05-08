@@ -3,8 +3,10 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <fstream>
 #include "Bird.h"
 #include "Pipe.h"
+
 
 enum class GameState { MENU, PLAYING, GAME_OVER };
 
@@ -55,6 +57,31 @@ int main() {
     gameoverTexture.loadFromFile("gameover.png");
     for (int i = 0; i < 10; i++)
         digitTextures[i].loadFromFile(std::to_string(i) + ".png");
+
+    sf::Font font;
+    font.loadFromFile("PressStart2P-Regular.ttf");
+    int highScore = 0;
+    std::ifstream loadFile("highscore.txt");
+    if (loadFile.is_open()) {
+        loadFile >> highScore;
+        loadFile.close();
+    }
+
+    // текст "BEST"
+    sf::Text bestLabel("BEST", font, 14);
+    bestLabel.setFillColor(sf::Color(255, 255, 255));
+    bestLabel.setOutlineColor(sf::Color(0, 0, 0));
+    bestLabel.setOutlineThickness(2.0f);
+    bestLabel.setOrigin(bestLabel.getLocalBounds().width / 2.0f, 0.0f);
+    bestLabel.setPosition(200.0f, 400.0f);
+
+    // число рекорда
+    sf::Text bestScoreText(std::to_string(highScore), font, 18);
+    bestScoreText.setFillColor(sf::Color(255, 215, 0)); // золотой
+    bestScoreText.setOutlineColor(sf::Color::Black);
+    bestScoreText.setOutlineThickness(2.0f);
+    bestScoreText.setOrigin(bestScoreText.getLocalBounds().width / 2.0f, 0.0f);
+    bestScoreText.setPosition(200.0f, 430.0f);
 
     // НАСТРОЙКА СПРАЙТОВ 
     sf::Sprite bgSprite(bgTexture);
@@ -168,14 +195,29 @@ int main() {
                     bird.poluchit_ramku().intersects(pipes[i].nizhnyaya_ramka()))
                 {
                     state = GameState::GAME_OVER;
+
+                    if (score > highScore) {
+                        highScore = score;
+                        bestScoreText.setString(std::to_string(highScore));
+                        std::ofstream saveFile("highscore.txt");
+                        if (saveFile.is_open()) { saveFile << highScore; saveFile.close(); }
+                    }
                 }
             }
 
             // столкновение с землёй
             sf::FloatRect br = bird.poluchit_ramku();
             // y нижнего края.  нижний край птицы ниже верха земли
-            if (br.top + br.height > groundY)
+            if (br.top + br.height > groundY) {
                 state = GameState::GAME_OVER;
+
+                if (score > highScore) {
+                    highScore = score;
+                    bestScoreText.setString(std::to_string(highScore));
+                    std::ofstream saveFile("highscore.txt");
+                    if (saveFile.is_open()) { saveFile << highScore; saveFile.close(); }
+                }
+            }
         }
 
         // ===== ОТРИСОВКА =====
@@ -198,6 +240,9 @@ int main() {
         } else if (state == GameState::GAME_OVER) {
             window.draw(gameoverSprite);
             drawScore(window, digitTextures, score, 270.0f);
+
+            window.draw(bestLabel);
+            window.draw(bestScoreText);
         }
 
         //показывает нарисованный кадр на экране
