@@ -83,6 +83,12 @@ int main() {
     bestScoreText.setOrigin(bestScoreText.getLocalBounds().width / 2.0f, 0.0f);
     bestScoreText.setPosition(200.0f, 430.0f);
 
+    sf::Text hintSkin("LEFT / RIGHT buttons for changing the skin", font, 8);
+    hintSkin.setFillColor(sf::Color::White);
+    hintSkin.setOutlineColor(sf::Color::Black);
+    hintSkin.setOutlineThickness(1.5f);
+    hintSkin.setPosition(15.0f, 15.0f); // 15 пикселей от левого и верхнего края
+
     // НАСТРОЙКА СПРАЙТОВ 
     sf::Sprite bgSprite(bgTexture);
     bgSprite.setScale(400.0f / bgTexture.getSize().x, 600.0f / bgTexture.getSize().y); // фон на всё окно
@@ -109,7 +115,16 @@ int main() {
     }
 
     // ИГРОВЫЕ ОБЪЕКТЫ
+    int selectedSkin = 1; 
+    std::ifstream loadSkin("skin.txt");
+    if (loadSkin.is_open()) {
+        loadSkin >> selectedSkin;
+        loadSkin.close();
+    }
+    if (selectedSkin < 0 || selectedSkin > 2) selectedSkin = 1;
+
     Bird bird;
+    bird.setSkin(selectedSkin); // применяем скин сразу при старте
     std::vector<Pipe> pipes;
     for (int i = 0; i < 4; i++) pipes.push_back(Pipe());
 
@@ -118,6 +133,7 @@ int main() {
 
     GameState state = GameState::MENU;  // начальное состояние — меню
     int score = 0;
+
 
     // начальная расстановка труб
     float x = 500.0f; // начальная x координата первой трубы
@@ -151,6 +167,22 @@ int main() {
                     resetGame(bird, pipes, PIPE_DISTANCE, groundY);
                     score = 0;
                     state = GameState::MENU;
+                }
+            }
+            if (state == GameState::MENU && event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Left) {
+                    selectedSkin--;
+                    if (selectedSkin < 0) selectedSkin = 2;
+                    bird.setSkin(selectedSkin);
+                    std::ofstream saveSkin("skin.txt");
+                    if (saveSkin.is_open()) { saveSkin << selectedSkin; saveSkin.close(); }
+                }
+                if (event.key.code == sf::Keyboard::Right) {
+                    selectedSkin++;
+                    if (selectedSkin > 2) selectedSkin = 0;
+                    bird.setSkin(selectedSkin);
+                    std::ofstream saveSkin("skin.txt");
+                    if (saveSkin.is_open()) { saveSkin << selectedSkin; saveSkin.close(); }
                 }
             }
         }
@@ -220,7 +252,7 @@ int main() {
             }
         }
 
-        // ===== ОТРИСОВКА =====
+        // ОТРИСОВКА
         window.clear();
         window.draw(bgSprite);
 
@@ -235,6 +267,7 @@ int main() {
 
         if (state == GameState::MENU) {
             window.draw(messageSprite);
+            window.draw(hintSkin);
         } else if (state == GameState::PLAYING) {
             drawScore(window, digitTextures, score, 40.0f);
         } else if (state == GameState::GAME_OVER) {

@@ -1,17 +1,33 @@
 #include "Bird.h"
 #include <algorithm>
 
+static std::string getSkinPath(int skin, int frame) {
+    const char* names[3] = { "yellowbird", "bluebird", "pinkbird" };
+    const char* frames[3] = { "-upflap.png", "-midflap.png", "-downflap.png" };
+    return std::string(names[skin]) + frames[frame];
+}
+
 Bird::Bird() : skorost(0.0f), ugol(0.0f), animTimer(0.0f), animFrame(1) {
-    textures[0].loadFromFile("pinkbird-upflap.png");
-    textures[1].loadFromFile("pinkbird-midflap.png");
-    textures[2].loadFromFile("pinkbird-downflap.png");
+    setSkin(1);
+}
+void Bird::setSkin(int skinIndex) {
+    if (skinIndex < 0) skinIndex = 0;
+    if (skinIndex > 2) skinIndex = 2;
 
-    sprite.setTexture(textures[animFrame]); // привязка текстуры к спрайту
+    textures[0].loadFromFile(getSkinPath(skinIndex, 0));
+    textures[1].loadFromFile(getSkinPath(skinIndex, 1));
+    textures[2].loadFromFile(getSkinPath(skinIndex, 2));
 
-    sf::FloatRect b = sprite.getLocalBounds();  
-    sprite.setOrigin(b.width / 2.0f, b.height / 2.0f); // центр спрайта
-    sprite.setScale(1.5f, 1.5f);  
-    sprite.setPosition(100.0f, 300.0f);  
+    // gрименяем текстуру и сбрасываем параметры спрайта
+    sprite.setTexture(textures[1]);
+    sprite.setPosition(100.0f, 300.0f);
+    sf::FloatRect b = sprite.getLocalBounds();
+    sprite.setOrigin(b.width / 2.0f, b.height / 2.0f);
+    sprite.setScale(1.5f, 1.5f);
+
+    animFrame = 1;
+    animTimer = 0.0f;
+    sprite.setTexture(textures[animFrame]);
 }
 
 void Bird::update(float dt) {

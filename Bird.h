@@ -10,6 +10,7 @@ public:
     void draw(sf::RenderWindow& window) const;
     sf::FloatRect poluchit_ramku() const;
     void reset();
+    void setSkin(int skinIndex);
 
 private:
     sf::Texture textures[3]; 
