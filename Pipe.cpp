@@ -1,9 +1,10 @@
 #include "Pipe.h"
 
+
 sf::Texture Pipe::texture;
 bool Pipe::textureLoaded = false; // флаг - загружена ли текстура
 
-Pipe::Pipe(): proshla(false) {
+Pipe::Pipe(): proshla(false), prosvet(150.0f) {
     if (!textureLoaded) {
         texture.loadFromFile("pipe-green.png");
         texture.setSmooth(false); // чёткие пиксели
@@ -26,7 +27,7 @@ void Pipe::draw(sf::RenderWindow& window) const {
 }
 
 void Pipe::spawn(float x, float gap_center_y, float groundY) {
-    float half_gap = PROSVET / 2.0f; // расстояние от центра просвета до его края
+    float half_gap = prosvet / 2.0f; // расстояние от центра просвета до его края
 
     float min_gap = half_gap + 10.0f;          // отступ от потолка, минимально допустимый gap_center_y
     float max_gap = groundY - half_gap - 10.0f; // отступ от земли
@@ -60,3 +61,4 @@ sf::FloatRect Pipe::nizhnyaya_ramka() const {
 bool Pipe::get_proshla() const  { return proshla; }
 void Pipe::set_proshla(bool p)  { proshla = p; }
 float Pipe::getX() const        { return nizhnyaya_truba.getPosition().x; }
+void Pipe::setGap(float gap) { prosvet = gap; }

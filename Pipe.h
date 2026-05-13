@@ -12,8 +12,10 @@ public:
     sf::FloatRect nizhnyaya_ramka() const;
     bool  get_proshla() const;
     void  set_proshla(bool prolet);
+    void setGap(float gap);
     float getX() const;  
-    const float PROSVET = 150.0f;
+    
+    
 
 private:
     // одна текстура на все трубы — загружается один раз
@@ -24,6 +26,8 @@ private:
     sf::Sprite nizhnyaya_truba;   // нижняя
 
     bool proshla;
+    float prosvet;
     const float SKOROST = 160.0f;
+    float getGap() const { return prosvet; }
     
 };

@@ -7,6 +7,22 @@
 #include "Bird.h"
 #include "Pipe.h"
 
+enum class Difficulty { EASY, NORMAL, HARD };
+
+struct GameSettings {
+    float gravity;
+    float jumpForce;
+    float pipeGap;
+    const char* name;
+};
+
+// настройки для 3 режимов
+const GameSettings SETTINGS[3] = {
+    {650.0f, -240.0f, 190.0f, "EASY"},  
+    {900.0f, -300.0f, 150.0f, "NORMAL"},  
+    {1150.0f,-280.0f, 110.0f, "HARD"}    
+};
+
 
 enum class GameState { MENU, PLAYING, GAME_OVER };
 
@@ -123,6 +139,17 @@ int main() {
     }
     if (selectedSkin < 0 || selectedSkin > 2) selectedSkin = 1;
 
+
+    Difficulty currentDiff = Difficulty::NORMAL;   // по умолчанию средний
+    // текст для отображения сложности в меню
+    sf::Text diffText(SETTINGS[static_cast<int>(currentDiff)].name, font, 16);
+    diffText.setFillColor(sf::Color::Yellow);
+    diffText.setOutlineColor(sf::Color::Black);
+    diffText.setOutlineThickness(1.5f);
+    diffText.setOrigin(diffText.getLocalBounds().width / 2.0f, 0.0f);
+    diffText.setPosition(100.0f, 500.0f);
+
+
     Bird bird;
     bird.setSkin(selectedSkin); // применяем скин сразу при старте
     std::vector<Pipe> pipes;
@@ -159,6 +186,22 @@ int main() {
             {
                 // разные события
                 if (state == GameState::MENU) {
+                    // cначала меняем просвет у ВСЕХ труб
+                    for (auto& p : pipes) {
+                        p.setGap(SETTINGS[static_cast<int>(currentDiff)].pipeGap);
+                    }
+                    // потом применяем физику птицы
+                    bird.setPhysics(SETTINGS[static_cast<int>(currentDiff)].gravity,
+                        SETTINGS[static_cast<int>(currentDiff)].jumpForce);
+
+                    // пересоздаём трубы, чтобы они использовали новый просвет
+                    float x = 500.0f;
+                    for (int i = 0; i < 4; i++) {
+                        float gap_y = 100.0f + static_cast<float>(rand() % 301);
+                        pipes[i].spawn(x, gap_y, groundY);  // spawn теперь использует prosvet из экземпляра
+                        x += PIPE_DISTANCE;
+                    }
+
                     state = GameState::PLAYING;
                     bird.jump();
                 } else if (state == GameState::PLAYING) {
@@ -183,6 +226,18 @@ int main() {
                     bird.setSkin(selectedSkin);
                     std::ofstream saveSkin("skin.txt");
                     if (saveSkin.is_open()) { saveSkin << selectedSkin; saveSkin.close(); }
+                }
+                if (state == GameState::MENU && event.type == sf::Event::KeyPressed) {
+                    if (event.key.code == sf::Keyboard::Up) {
+                        if (currentDiff == Difficulty::EASY) currentDiff = Difficulty::HARD;
+                        else currentDiff = static_cast<Difficulty>(static_cast<int>(currentDiff) - 1);
+                        diffText.setString(SETTINGS[static_cast<int>(currentDiff)].name);
+                    }
+                    if (event.key.code == sf::Keyboard::Down) {
+                        if (currentDiff == Difficulty::HARD) currentDiff = Difficulty::EASY;
+                        else currentDiff = static_cast<Difficulty>(static_cast<int>(currentDiff) + 1);
+                        diffText.setString(SETTINGS[static_cast<int>(currentDiff)].name);
+                    }
                 }
             }
         }
@@ -228,7 +283,7 @@ int main() {
                 {
                     state = GameState::GAME_OVER;
 
-                    if (score > highScore) {
+                    if (currentDiff != Difficulty::EASY && score > highScore) {
                         highScore = score;
                         bestScoreText.setString(std::to_string(highScore));
                         std::ofstream saveFile("highscore.txt");
@@ -243,7 +298,7 @@ int main() {
             if (br.top + br.height > groundY) {
                 state = GameState::GAME_OVER;
 
-                if (score > highScore) {
+                if (currentDiff != Difficulty::EASY && score > highScore) {
                     highScore = score;
                     bestScoreText.setString(std::to_string(highScore));
                     std::ofstream saveFile("highscore.txt");
@@ -268,14 +323,24 @@ int main() {
         if (state == GameState::MENU) {
             window.draw(messageSprite);
             window.draw(hintSkin);
+            window.draw(diffText);
         } else if (state == GameState::PLAYING) {
             drawScore(window, digitTextures, score, 40.0f);
         } else if (state == GameState::GAME_OVER) {
             window.draw(gameoverSprite);
             drawScore(window, digitTextures, score, 270.0f);
 
-            window.draw(bestLabel);
-            window.draw(bestScoreText);
+            if (currentDiff != Difficulty::EASY) {
+                window.draw(bestLabel);
+                window.draw(bestScoreText);
+            } else {
+                // для лёгкого режима показываем надпись вместо рекорда
+                sf::Text easyMsg("EASY MODE - NO RECORDS", font, 12);
+                easyMsg.setFillColor(sf::Color::Black);
+                easyMsg.setOrigin(easyMsg.getLocalBounds().width / 2, 0);
+                easyMsg.setPosition(200.0f, 500.0f);
+                window.draw(easyMsg);
+            }
         }
 
         //показывает нарисованный кадр на экране

@@ -83,3 +83,8 @@ void Bird::reset() {
     animFrame = 1;
     sprite.setTexture(textures[animFrame]);
 }
+
+void Bird::setPhysics(float gravity, float jumpForce) {
+    GRAVITY = gravity;
+    JUMP_FORCE = jumpForce;
+}

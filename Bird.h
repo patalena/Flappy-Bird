@@ -11,6 +11,7 @@ public:
     sf::FloatRect poluchit_ramku() const;
     void reset();
     void setSkin(int skinIndex);
+    void setPhysics(float gravity, float jumpForce);
 
 private:
     sf::Texture textures[3]; 
@@ -20,8 +21,8 @@ private:
     float animTimer;   // таймер анимации - увеличивается на dt каждый кадр - когда достигает 0.1 секунды — переключаем кадр
     int animFrame;  // текущий кадр анимации (0, 1 или 2).
 
-    const float GRAVITY = 900.0f;
-    const float JUMP_FORCE = -300.0f;
+    float GRAVITY = 900.0f;
+    float JUMP_FORCE = -300.0f;
     const float MAX_UGOL = 90.0f;
     const float MIN_UGOL = -15.0f;
 };
