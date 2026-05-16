@@ -13,9 +13,10 @@ public:
     bool  get_proshla() const;
     void  set_proshla(bool prolet);
     void setGap(float gap);
-    float getX() const;  
-    
-    
+    void setSpeed(float speed);
+    float getX() const;
+
+
 
 private:
     // одна текстура на все трубы — загружается один раз
@@ -27,7 +28,7 @@ private:
 
     bool proshla;
     float prosvet;
-    const float SKOROST = 160.0f;
+    float SKOROST = 160.0f;
     float getGap() const { return prosvet; }
-    
+
 };

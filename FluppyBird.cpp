@@ -13,14 +13,15 @@ struct GameSettings {
     float gravity;
     float jumpForce;
     float pipeGap;
+    float pipeSpeed;
     const char* name;
 };
 
 // настройки для 3 режимов
 const GameSettings SETTINGS[3] = {
-    {650.0f, -240.0f, 190.0f, "EASY"},  
-    {900.0f, -300.0f, 150.0f, "NORMAL"},  
-    {1150.0f,-280.0f, 110.0f, "HARD"}    
+    {650.0f, -240.0f, 190.0f, 120.0f, "EASY"},
+    {900.0f, -300.0f, 150.0f, 160.0f, "NORMAL"},
+    {1150.0f,-280.0f, 110.0f, 220.0f, "HARD"}
 };
 
 
@@ -187,8 +188,12 @@ int main() {
                 // разные события
                 if (state == GameState::MENU) {
                     // cначала меняем просвет у ВСЕХ труб
+                    bird.setPhysics(SETTINGS[static_cast<int>(currentDiff)].gravity,
+                        SETTINGS[static_cast<int>(currentDiff)].jumpForce);
+
                     for (auto& p : pipes) {
                         p.setGap(SETTINGS[static_cast<int>(currentDiff)].pipeGap);
+                        p.setSpeed(SETTINGS[static_cast<int>(currentDiff)].pipeSpeed); // <-- ДОБАВИЛИ СКОРОСТЬ
                     }
                     // потом применяем физику птицы
                     bird.setPhysics(SETTINGS[static_cast<int>(currentDiff)].gravity,

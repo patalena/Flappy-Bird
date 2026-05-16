@@ -62,3 +62,4 @@ bool Pipe::get_proshla() const  { return proshla; }
 void Pipe::set_proshla(bool p)  { proshla = p; }
 float Pipe::getX() const        { return nizhnyaya_truba.getPosition().x; }
 void Pipe::setGap(float gap) { prosvet = gap; }
+void Pipe::setSpeed(float speed) { SKOROST = speed; }
