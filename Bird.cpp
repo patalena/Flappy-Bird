@@ -18,7 +18,6 @@ void Bird::setSkin(int skinIndex) {
     textures[1].loadFromFile(getSkinPath(skinIndex, 1));
     textures[2].loadFromFile(getSkinPath(skinIndex, 2));
 
-    // gрименяем текстуру и сбрасываем параметры спрайта
     sprite.setTexture(textures[1]);
     sprite.setPosition(100.0f, 300.0f);
     sf::FloatRect b = sprite.getLocalBounds();
@@ -34,24 +33,23 @@ void Bird::update(float dt) {
     skorost += GRAVITY * dt;  
     sprite.move(0, skorost * dt);  
 
-    if (sprite.getPosition().y < 0) {  // птица выше верхнего края окна
+    if (sprite.getPosition().y < 0) { 
         sprite.setPosition(sprite.getPosition().x, 0); 
         skorost = 0;  
     }
     if (skorost > 0) {
-        // птица падает вниз
-        ugol = std::min(skorost * 0.1f, MAX_UGOL); // угол (зависит от скорости)
+
+        ugol = std::min(skorost * 0.1f, MAX_UGOL); 
     } else {
-        // птица летит вверх
+
         ugol = std::max(skorost * 0.1f, MIN_UGOL);
     }
-    sprite.setRotation(ugol);  // поворот спрайта на угол
-    // анимация: перебираем три кадра
+    sprite.setRotation(ugol);  
     animTimer += dt;  
     if (animTimer >= 0.1f) { 
         animTimer = 0.0f;
-        animFrame = (animFrame + 1) % 3; // циклическое переключение
-        sprite.setTexture(textures[animFrame]);  // новая текстура
+        animFrame = (animFrame + 1) % 3; 
+        sprite.setTexture(textures[animFrame]);  
     }
 }
 
@@ -66,7 +64,6 @@ void Bird::draw(sf::RenderWindow& window) const {
 
 sf::FloatRect Bird::poluchit_ramku() const {
     sf::FloatRect rect = sprite.getGlobalBounds(); 
-    // уменьшение хитбокса
     rect.left += 5.0f;
     rect.top += 5.0f;
     rect.width -= 10.0f;

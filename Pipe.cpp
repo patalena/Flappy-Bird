@@ -2,20 +2,19 @@
 
 
 sf::Texture Pipe::texture;
-bool Pipe::textureLoaded = false; // флаг - загружена ли текстура
+bool Pipe::textureLoaded = false; 
 
 Pipe::Pipe(): proshla(false), prosvet(150.0f) {
     if (!textureLoaded) {
         texture.loadFromFile("pipe-green.png");
-        texture.setSmooth(false); // чёткие пиксели
+        texture.setSmooth(false); 
         textureLoaded = true;
     }
-    // привязка текстуры к спрайтам
+    
     nizhnyaya_truba.setTexture(texture);
     verhnyaya_truba.setTexture(texture);
 }
 
-// сдвиг труб влево
 void Pipe::update(float dt) {
     verhnyaya_truba.move(-SKOROST * dt, 0);
     nizhnyaya_truba.move(-SKOROST * dt, 0);
@@ -27,16 +26,16 @@ void Pipe::draw(sf::RenderWindow& window) const {
 }
 
 void Pipe::spawn(float x, float gap_center_y, float groundY) {
-    float half_gap = prosvet / 2.0f; // расстояние от центра просвета до его края
+    float half_gap = prosvet / 2.0f; 
 
-    float min_gap = half_gap + 10.0f;          // отступ от потолка, минимально допустимый gap_center_y
-    float max_gap = groundY - half_gap - 10.0f; // отступ от земли
+    float min_gap = half_gap + 10.0f;         
+    float max_gap = groundY - half_gap - 10.0f; 
 
     if (gap_center_y < min_gap) gap_center_y = min_gap;
     if (gap_center_y > max_gap) gap_center_y = max_gap;
 
     nizhnyaya_truba.setScale(1.0f, 1.0f);
-    nizhnyaya_truba.setPosition(x, gap_center_y + half_gap); // y  - координата верхнего края нижней трубы
+    nizhnyaya_truba.setPosition(x, gap_center_y + half_gap); 
 
     verhnyaya_truba.setScale(1.0f, -1.0f);
     verhnyaya_truba.setPosition(x, gap_center_y - half_gap);
@@ -46,7 +45,6 @@ void Pipe::spawn(float x, float gap_center_y, float groundY) {
 
 
 bool Pipe::uletela_za_ekran() const {
-    // х координата левого края нижней трубы + ширина текстуры
     return nizhnyaya_truba.getPosition().x + (float)texture.getSize().x < 0;
 }
 

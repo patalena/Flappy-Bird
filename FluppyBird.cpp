@@ -17,7 +17,7 @@ struct GameSettings {
     const char* name;
 };
 
-// настройки для 3 режимов
+
 const GameSettings SETTINGS[3] = {
     {650.0f, -240.0f, 190.0f, 120.0f, "EASY"},
     {900.0f, -300.0f, 150.0f, 160.0f, "NORMAL"},
@@ -28,24 +28,23 @@ const GameSettings SETTINGS[3] = {
 enum class GameState { MENU, PLAYING, GAME_OVER };
 
 static void drawScore(sf::RenderWindow& window, sf::Texture digitTextures[10], int scoreVal, float yPos) {
-    std::string s = std::to_string(scoreVal); // преобразование числа в строку
+    std::string s = std::to_string(scoreVal); 
 
-    // общая ширина счёта
     float totalW = 0;
     for (size_t i = 0; i < s.size(); i++) {
         char c = s[i];
         totalW += digitTextures[c - '0'].getSize().x * 2.0f;
     }
 
-    float x = (400.0f - totalW) / 2.0f; // х для центрирования
+    float x = (400.0f - totalW) / 2.0f; 
     for (size_t i = 0; i < s.size(); i++) {
-        char c = s[i];                        // берём цифру из строки
-        int d = c - '0';                      // преобразуем символ в число(0 - 9)
-        sf::Sprite sp(digitTextures[d]);      // создаём спрайт с соответствующей текстурой
-        sp.setScale(2.0f, 2.0f);              // увеличиваем в 2 раза
-        sp.setPosition(x, yPos);              // ставим на позицию(x, yPos)
+        char c = s[i];                       
+        int d = c - '0';                      
+        sf::Sprite sp(digitTextures[d]);     
+        sp.setScale(2.0f, 2.0f);             
+        sp.setPosition(x, yPos);             
         window.draw(sp);
-        x += digitTextures[d].getSize().x * 2.0f; // сдвигаем x вправо на ширину цифры
+        x += digitTextures[d].getSize().x * 2.0f; 
     }
 }
 
@@ -53,7 +52,7 @@ static void resetGame(Bird& bird, std::vector<Pipe>& pipes, float PIPE_DISTANCE,
     bird.reset();
     float x = 500.0f;
     for (int i = 0; i < 4; i++) {
-        float gap_y = 100.0f + static_cast<float>(rand() % 301); // от 100 до 400
+        float gap_y = 100.0f + static_cast<float>(rand() % 301); 
         pipes[i].spawn(x, gap_y, groundY); 
         x += PIPE_DISTANCE;
     }
@@ -84,7 +83,6 @@ int main() {
         loadFile.close();
     }
 
-    // текст "BEST"
     sf::Text bestLabel("BEST", font, 14);
     bestLabel.setFillColor(sf::Color(255, 255, 255));
     bestLabel.setOutlineColor(sf::Color(0, 0, 0));
@@ -92,9 +90,8 @@ int main() {
     bestLabel.setOrigin(bestLabel.getLocalBounds().width / 2.0f, 0.0f);
     bestLabel.setPosition(200.0f, 400.0f);
 
-    // число рекорда
     sf::Text bestScoreText(std::to_string(highScore), font, 18);
-    bestScoreText.setFillColor(sf::Color(255, 215, 0)); // золотой
+    bestScoreText.setFillColor(sf::Color(255, 215, 0)); 
     bestScoreText.setOutlineColor(sf::Color::Black);
     bestScoreText.setOutlineThickness(2.0f);
     bestScoreText.setOrigin(bestScoreText.getLocalBounds().width / 2.0f, 0.0f);
@@ -104,15 +101,15 @@ int main() {
     hintSkin.setFillColor(sf::Color::White);
     hintSkin.setOutlineColor(sf::Color::Black);
     hintSkin.setOutlineThickness(1.5f);
-    hintSkin.setPosition(15.0f, 15.0f); // 15 пикселей от левого и верхнего края
+    hintSkin.setPosition(15.0f, 15.0f); 
 
     // НАСТРОЙКА СПРАЙТОВ 
     sf::Sprite bgSprite(bgTexture);
-    bgSprite.setScale(400.0f / bgTexture.getSize().x, 600.0f / bgTexture.getSize().y); // фон на всё окно
+    bgSprite.setScale(400.0f / bgTexture.getSize().x, 600.0f / bgTexture.getSize().y); 
 
-    float baseScale = 400.0f / (float)baseTexture.getSize().x; // масштаб земли по ширине
+    float baseScale = 400.0f / (float)baseTexture.getSize().x; 
     float baseHeight = baseTexture.getSize().y * baseScale;
-    float groundY = 600.0f - baseHeight; // y координата верха земли
+    float groundY = 600.0f - baseHeight; 
     sf::Sprite baseSprite(baseTexture);
     baseSprite.setScale(baseScale, baseScale);
     baseSprite.setPosition(0, groundY);
@@ -141,8 +138,7 @@ int main() {
     if (selectedSkin < 0 || selectedSkin > 2) selectedSkin = 1;
 
 
-    Difficulty currentDiff = Difficulty::NORMAL;   // по умолчанию средний
-    // текст для отображения сложности в меню
+    Difficulty currentDiff = Difficulty::NORMAL; 
     sf::Text diffText(SETTINGS[static_cast<int>(currentDiff)].name, font, 16);
     diffText.setFillColor(sf::Color::Yellow);
     diffText.setOutlineColor(sf::Color::Black);
@@ -152,58 +148,53 @@ int main() {
 
 
     Bird bird;
-    bird.setSkin(selectedSkin); // применяем скин сразу при старте
+    bird.setSkin(selectedSkin); 
     std::vector<Pipe> pipes;
     for (int i = 0; i < 4; i++) pipes.push_back(Pipe());
 
     const float PIPE_DISTANCE = 230.0f;
     const float PIPE_WIDTH = 52.0f;
 
-    GameState state = GameState::MENU;  // начальное состояние — меню
+    GameState state = GameState::MENU;  
     int score = 0;
 
 
-    // начальная расстановка труб
-    float x = 500.0f; // начальная x координата первой трубы
+
+    float x = 500.0f; 
     for (int i = 0; i < 4; i++) {
         float gap_y = 100.0f + static_cast<float>(rand() % 301);
         pipes[i].spawn(x, gap_y, groundY);
         x += PIPE_DISTANCE;
     }
 
-    sf::Clock clock; // часы для измерения времени между кадрами
+    sf::Clock clock; 
 
     // ИГРОВОЙ ЦИКЛ 
     while (window.isOpen()) {
-        // clock.restart() — сбрасывает часы и возвращает прошедшее время, asSeconds() — преобразует в секунды(float)
         float dt = clock.restart().asSeconds(); 
 
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) // закрыл окно
+            if (event.type == sf::Event::Closed) 
                 window.close();
 
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
-                // разные события
                 if (state == GameState::MENU) {
-                    // cначала меняем просвет у ВСЕХ труб
                     bird.setPhysics(SETTINGS[static_cast<int>(currentDiff)].gravity,
                         SETTINGS[static_cast<int>(currentDiff)].jumpForce);
 
                     for (auto& p : pipes) {
                         p.setGap(SETTINGS[static_cast<int>(currentDiff)].pipeGap);
-                        p.setSpeed(SETTINGS[static_cast<int>(currentDiff)].pipeSpeed); // <-- ДОБАВИЛИ СКОРОСТЬ
+                        p.setSpeed(SETTINGS[static_cast<int>(currentDiff)].pipeSpeed); 
                     }
-                    // потом применяем физику птицы
                     bird.setPhysics(SETTINGS[static_cast<int>(currentDiff)].gravity,
                         SETTINGS[static_cast<int>(currentDiff)].jumpForce);
 
-                    // пересоздаём трубы, чтобы они использовали новый просвет
                     float x = 500.0f;
                     for (int i = 0; i < 4; i++) {
                         float gap_y = 100.0f + static_cast<float>(rand() % 301);
-                        pipes[i].spawn(x, gap_y, groundY);  // spawn теперь использует prosvet из экземпляра
+                        pipes[i].spawn(x, gap_y, groundY);  
                         x += PIPE_DISTANCE;
                     }
 
@@ -254,25 +245,22 @@ int main() {
                 pipes[i].update(dt);
             }
 
-            // переспавн труб
-            // поиск самой правой
             float rightmost = -1000.0f;
             for (size_t i = 0; i < pipes.size(); i++) {
                 if (pipes[i].getX() > rightmost) rightmost = pipes[i].getX();
             }
-            if (rightmost < 400.0f) {  // самая правая труба зашла левее x=400
+            if (rightmost < 400.0f) {  
                 for (size_t i = 0; i < pipes.size(); i++) {
                     if (pipes[i].uletela_za_ekran()) {
                         float gap_y = 100.0f + static_cast<float>(rand() % 301);
-                        pipes[i].spawn(rightmost + PIPE_DISTANCE, gap_y, groundY); // перерождает улетевшую трубу
+                        pipes[i].spawn(rightmost + PIPE_DISTANCE, gap_y, groundY); 
                         break;
                     }
                 }
             }
 
-            // счёт
+            // СЧЁТ
             for (size_t i = 0; i < pipes.size(); i++) {
-                                             // х правого края трубы < х левого края птицы    
                 if (!pipes[i].get_proshla() && pipes[i].getX() + PIPE_WIDTH < bird.poluchit_ramku().left)
                 {
                     pipes[i].set_proshla(true);
@@ -280,9 +268,7 @@ int main() {
                 }
             }
 
-            // столкновения с трубами
             for (size_t i = 0; i < pipes.size(); i++) {
-                // intersects() - проверка пересечения двух прямоугольников - true - пересекаются
                 if (bird.poluchit_ramku().intersects(pipes[i].verhnyaya_ramka()) ||
                     bird.poluchit_ramku().intersects(pipes[i].nizhnyaya_ramka()))
                 {
@@ -297,9 +283,7 @@ int main() {
                 }
             }
 
-            // столкновение с землёй
             sf::FloatRect br = bird.poluchit_ramku();
-            // y нижнего края.  нижний край птицы ниже верха земли
             if (br.top + br.height > groundY) {
                 state = GameState::GAME_OVER;
 
@@ -316,7 +300,7 @@ int main() {
         window.clear();
         window.draw(bgSprite);
 
-        if (state != GameState::MENU) { // в меню трубы не рисуем
+        if (state != GameState::MENU) {
             for (size_t i = 0; i < pipes.size(); i++) {
                 pipes[i].draw(window);
             }
@@ -339,7 +323,7 @@ int main() {
                 window.draw(bestLabel);
                 window.draw(bestScoreText);
             } else {
-                // для лёгкого режима показываем надпись вместо рекорда
+
                 sf::Text easyMsg("EASY MODE - NO RECORDS", font, 12);
                 easyMsg.setFillColor(sf::Color::Black);
                 easyMsg.setOrigin(easyMsg.getLocalBounds().width / 2, 0);
@@ -348,9 +332,6 @@ int main() {
             }
         }
 
-        //показывает нарисованный кадр на экране
-        //до этого всё рисовалось в буфере(невидимой памяти)
-        //display() меняет буферы местами(double buffering)
         window.display();
     }
     return 0;

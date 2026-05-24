@@ -19,12 +19,12 @@ public:
 
 
 private:
-    // одна текстура на все трубы — загружается один раз
+
     static sf::Texture texture;
     static bool textureLoaded;
 
-    sf::Sprite verhnyaya_truba;   // верхняя (перевёрнутая)
-    sf::Sprite nizhnyaya_truba;   // нижняя
+    sf::Sprite verhnyaya_truba;   
+    sf::Sprite nizhnyaya_truba;  
 
     bool proshla;
     float prosvet;
