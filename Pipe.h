@@ -4,14 +4,17 @@
 class Pipe {
 public:
     Pipe();
-    void update(float dt);
+    void update(float dt);  //движение трубы
     void draw(sf::RenderWindow& window) const;
     void spawn(float x, float gap_center_y, float groundY);
+
     bool uletela_za_ekran() const;
     sf::FloatRect verhnyaya_ramka() const;
     sf::FloatRect nizhnyaya_ramka() const;
+
     bool  get_proshla() const;
     void  set_proshla(bool prolet);
+
     void setGap(float gap);
     void setSpeed(float speed);
     float getX() const;
@@ -21,7 +24,7 @@ public:
 private:
 
     static sf::Texture texture;
-    static bool textureLoaded;
+    static bool textureLoaded;  //флаг что текстура загружена
 
     sf::Sprite verhnyaya_truba;   
     sf::Sprite nizhnyaya_truba;  

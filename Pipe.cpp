@@ -26,8 +26,8 @@ void Pipe::draw(sf::RenderWindow& window) const {
 }
 
 void Pipe::spawn(float x, float gap_center_y, float groundY) {
-    float half_gap = prosvet / 2.0f; 
-
+    float half_gap = prosvet / 2.0f; //половина просвета
+    // вычисляем допустимый диапазон для gap_center_y
     float min_gap = half_gap + 10.0f;         
     float max_gap = groundY - half_gap - 10.0f; 
 

@@ -5,7 +5,7 @@ class Bird {
 public:
     Bird();
 
-    void update(float dt);  
+    void update(float dt);  //время в секундах с прошлого кадра
     void jump();
     void draw(sf::RenderWindow& window) const;
     sf::FloatRect poluchit_ramku() const;
@@ -18,8 +18,8 @@ private:
     sf::Sprite sprite;
     float skorost;
     float ugol;
-    float animTimer;  
-    int animFrame; 
+    float animTimer;  //таймер для управления частотой смены кадров анимации
+    int animFrame; //индекс текующего
 
     float GRAVITY = 900.0f;
     float JUMP_FORCE = -300.0f;
